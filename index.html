@@ -310,7 +310,7 @@ svg text{fill:var(--texto);font-size:12px}
 
 /* ---------- planilha (Google Apps Script) ---------- */
 // Cole aqui a URL da implantação do Apps Script (ver apps_script/Code.gs). Vazio = ainda não conectado.
-const APPS_SCRIPT_URL = "";
+const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxxoZ9OTRF3ygcc6sPGrVR1VeV48oGBu7dXzn0tuWaD6Wr3S74mxJTQFnLr33S2juUiMA/exec";
 function enviarPlanilha(texto, tipo) {
   if (!APPS_SCRIPT_URL) { status("Ainda não conectado à planilha. Publique o Apps Script e cole a URL no site.", "aviso"); return; }
   // no-cors: o Apps Script não libera CORS, então o envio chega mas a resposta não é lida pelo navegador.
