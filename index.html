@@ -103,6 +103,55 @@ svg text{fill:var(--texto);font-size:12px}
 </style>
 </head>
 <body>
+<!-- Tela de login com Google (Google Identity Services). O ID do cliente é público por natureza. -->
+<div id="telaLogin" style="position:fixed;inset:0;z-index:100;background:var(--fundo);display:flex;align-items:center;justify-content:center;padding:20px">
+  <div class="painel" style="max-width:420px;width:100%;text-align:center;padding:32px 24px;border-radius:8px">
+    <img src="logo.svg" alt="" style="width:72px;height:72px">
+    <h2 style="margin:14px 0 6px">Aura Gestora Pessoal</h2>
+    <p class="cinza" style="margin:0 0 22px">Entre com sua conta Google para continuar.</p>
+    <div id="botaoGoogle" style="display:flex;justify-content:center"></div>
+    <p class="cinza" style="font-size:12px;margin-top:18px">Demonstração: os dados exibidos são fictícios.</p>
+  </div>
+</div>
+<script src="https://accounts.google.com/gsi/client" async defer></script>
+<script>
+const GOOGLE_CLIENT_ID = "931034543373-eerv99ov4uobls8s5n46v20r9s6g459k.apps.googleusercontent.com";
+function decodificarToken(credencial){
+  const payload = credencial.split(".")[1].replace(/-/g,"+").replace(/_/g,"/");
+  const json = decodeURIComponent(atob(payload).split("").map(c=>"%"+("00"+c.charCodeAt(0).toString(16)).slice(-2)).join(""));
+  return JSON.parse(json);
+}
+function aoEntrar(resposta){
+  try{
+    const usuario = decodificarToken(resposta.credential);
+    localStorage.setItem("aura_usuario", JSON.stringify({nome:usuario.name, email:usuario.email, foto:usuario.picture}));
+    mostrarUsuario(usuario);
+  }catch(e){ alert("Não consegui confirmar seu login. Tente de novo."); }
+}
+function mostrarUsuario(u){
+  document.getElementById("telaLogin").style.display = "none";
+  let box = document.getElementById("usuarioCab");
+  if(!box){
+    box = document.createElement("span");
+    box.id = "usuarioCab";
+    box.style.cssText = "display:flex;align-items:center;gap:8px;font-size:13px;color:#C5D1DE";
+    document.querySelector(".topo .direita").prepend(box);
+  }
+  box.innerHTML = (u.picture ? '<img src="'+u.picture+'" alt="" style="width:24px;height:24px;border-radius:50%">' : "") + '<span>'+(u.name||u.email)+'</span><button id="btnSairLogin" class="btn pequeno" style="background:none;color:#C5D1DE;border-color:#44526A">Sair da conta</button>';
+  document.getElementById("btnSairLogin").addEventListener("click", ()=>{ localStorage.removeItem("aura_usuario"); location.reload(); });
+}
+window.addEventListener("load", ()=>{
+  const salvo = localStorage.getItem("aura_usuario");
+  if(salvo){ try{ mostrarUsuario(JSON.parse(salvo)); }catch(e){} }
+  const esperar = setInterval(()=>{
+    if(window.google && google.accounts && google.accounts.id){
+      clearInterval(esperar);
+      google.accounts.id.initialize({client_id: GOOGLE_CLIENT_ID, callback: aoEntrar});
+      google.accounts.id.renderButton(document.getElementById("botaoGoogle"), {theme:"outline", size:"large", text:"signin_with", shape:"rectangular", width:300, locale:"pt-BR"});
+    }
+  }, 200);
+});
+</script>
 <header class="topo">
   <div class="marca">
     <button class="menu-btn" id="btnMenu" aria-label="Abrir menu">&#9776;</button>
