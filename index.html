@@ -426,8 +426,9 @@ async function carregarDados(){
     const r=await fetch(APPS_SCRIPT_URL+"?acao=dados&idToken="+encodeURIComponent(idToken));
     const j=await r.json();
     if(!j.ok){
-      if(/Login|Faça/.test(j.dados)){idToken=null;localStorage.removeItem("aura_credencial");mostrarLogin("Sua sessão expirou. Entre de novo.");return;}
-      status(j.dados,"erro");return;
+      console.log("Aura: planilha recusou", j.dados);
+      if(/expirad/i.test(j.dados)){idToken=null;localStorage.removeItem("aura_credencial");mostrarLogin("Sua sessão expirou. Entre de novo.");return;}
+      status("A planilha recusou o acesso: "+j.dados,"erro");return;
     }
     dados=j.dados;
     status("Dados atualizados.","sucesso");
