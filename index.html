@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Aura Gestora Pessoal</title>
+  <meta name="description" content="Agenda e finanças pessoais em texto livre, organizadas com IA. Dados no seu computador.">
+  <link rel="icon" href="logo.svg" type="image/svg+xml">
+  <style>
+    :root {
+      --cabecalho: #354A5F; --base: #0F1B2A; --fundo: #EEF1F4; --painel: #FFFFFF;
+      --texto: #1D2D3D; --cinza: #5B6B7A; --primaria: #0A6ED1; --primaria-escura: #0854A0;
+      --borda: #C5CED8;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root { --fundo: #1B2430; --painel: #242F3D; --texto: #E6EDF5; --cinza: #9AA8B8; --borda: #3A4758; }
+    }
+    * { box-sizing: border-box; }
+    body { margin: 0; background: var(--fundo); color: var(--texto); font: 16px/1.55 "Segoe UI", system-ui, -apple-system, Roboto, Arial, sans-serif; }
+    header { background: linear-gradient(var(--cabecalho), var(--base)); color: #fff; }
+    .wrap { max-width: 1080px; margin: 0 auto; padding: 0 20px; }
+    .topo { display: flex; align-items: center; gap: 14px; padding: 18px 0; }
+    .topo img { width: 44px; height: 44px; }
+    .topo strong { font-size: 1.1rem; letter-spacing: .2px; }
+    .hero { padding: 56px 0 64px; }
+    .hero h1 { font-size: clamp(2rem, 5vw, 3.2rem); line-height: 1.12; margin: 0 0 16px; color: #fff; }
+    .hero p { font-size: clamp(1rem, 2.2vw, 1.2rem); color: #C5D1DE; max-width: 640px; margin: 0 0 28px; }
+    .botao { display: inline-block; background: var(--primaria); color: #fff; text-decoration: none; padding: 12px 22px; border-radius: 8px; font-weight: 600; }
+    .botao:hover { background: var(--primaria-escura); }
+    main { padding: 48px 0 24px; }
+    .grade { display: grid; gap: 18px; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); }
+    .card { background: var(--painel); border: 1px solid var(--borda); border-radius: 12px; padding: 22px; }
+    .card h3 { margin: 0 0 8px; font-size: 1.05rem; }
+    .card p { margin: 0; color: var(--cinza); }
+    h2 { font-size: 1.5rem; margin: 0 0 18px; }
+    footer { color: var(--cinza); text-align: center; padding: 36px 0 48px; font-size: .9rem; }
+    @media (max-width: 600px) { .hero { padding: 36px 0 44px; } .topo img { width: 36px; height: 36px; } }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="wrap topo">
+      <img src="logo.svg" alt="" aria-hidden="true">
+      <strong>Aura Gestora Pessoal</strong>
+    </div>
+    <div class="wrap hero">
+      <h1>Sua agenda e suas finanças, do jeito que você fala.</h1>
+      <p>Escreva um texto livre, com ou sem imagem. A IA organiza compromissos, lançamentos, custos fixos e transferências. Você confere a prévia e só então grava.</p>
+      <a class="botao" href="#recursos">Conhecer os recursos</a>
+    </div>
+  </header>
+
+  <main class="wrap" id="recursos">
+    <h2>Recursos</h2>
+    <div class="grade">
+      <section class="card">
+        <h3>Entrada com IA</h3>
+        <p>Texto livre ou print. Compromissos, recebimentos, gastos, transferências e pagamentos viram uma prévia para revisar.</p>
+      </section>
+      <section class="card">
+        <h3>Custos fixos</h3>
+        <p>Vencimento, parcelas, quanto já foi pago e quanto falta, em reais e em percentual.</p>
+      </section>
+      <section class="card">
+        <h3>Indicadores</h3>
+        <p>Sobra do mês, taxa de poupança, reserva em meses, parcelas a pagar e a previsão dos próximos 12 meses.</p>
+      </section>
+      <section class="card">
+        <h3>Contas e investimentos</h3>
+        <p>Saldos de conta corrente, poupança e CDB, com rendimento calculado pelo CDI do Banco Central.</p>
+      </section>
+      <section class="card">
+        <h3>Seus dados, no seu computador</h3>
+        <p>O banco de dados fica no seu PC. Só o texto que você envia para organizar sai do computador.</p>
+      </section>
+    </div>
+  </main>
+
+  <footer>
+    <div class="wrap">Aura Gestora Pessoal · Python, Tkinter e SQLite</div>
+  </footer>
+</body>
+</html>
