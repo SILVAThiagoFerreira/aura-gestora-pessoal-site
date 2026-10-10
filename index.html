@@ -254,6 +254,7 @@ svg text{fill:var(--texto);font-size:12px}
         <textarea id="pedidoTxt" rows="4" style="width:100%;margin-top:8px"></textarea>
         <div style="margin-top:8px"><button class="btn prim" id="btnPedido">Enviar pedido</button></div>
       </div>
+      <div class="painel" style="margin-top:8px"><h3>Pedidos enviados</h3><div class="gw"><table><thead><tr><th>Quando</th><th>Tipo</th><th>Texto</th><th>Status</th><th>Resultado</th></tr></thead><tbody id="tabPedidos"></tbody></table></div></div>
     </section>
 
     <div class="status" id="status"><span id="msg"></span></div>
@@ -325,7 +326,7 @@ function voltar(){ir(historico.length?historico.pop():"AG01",false);}
 /* ---------- renderização ---------- */
 function renderizar(c){
   if(!dados){status("Carregando seus dados...","info");return;}
-  const r={AG02:renderAgenda,AG03:renderFin,AG04:renderResumo,AG05:renderAnot,AG06:renderIndicadores,AG08:renderCustos,AG09:renderContas,AG10:renderConfig,AG11:()=>{}}[c];
+  const r={AG02:renderAgenda,AG03:renderFin,AG04:renderResumo,AG05:renderAnot,AG06:renderIndicadores,AG08:renderCustos,AG09:renderContas,AG10:renderConfig,AG11:renderPedidos}[c];
   if(r)r();
 }
 function renderAgenda(){
@@ -351,6 +352,13 @@ function renderResumo(){
 }
 function renderAnot(){
   $("#tabAnot").innerHTML=tabela("Anotacoes").slice().reverse().map(a=>'<tr><td>'+esc(new Date(a.criado_em).toLocaleString("pt-BR"))+'</td><td style="white-space:normal">'+esc(String(a.texto).replace(/\s+/g," "))+'</td></tr>').join("")||'<tr><td colspan="2" class="cinza">Nenhuma anotação.</td></tr>';
+}
+function renderPedidos(){
+  const rot={pendente:"Pendente",processado:"Processado",erro:"Erro"};
+  $("#tabPedidos").innerHTML=tabela("Pedidos").slice().reverse().map(p=>{
+    const quando=new Date(p["Data/hora"]);
+    return '<tr><td>'+esc(isNaN(quando)?String(p["Data/hora"]||""):quando.toLocaleString("pt-BR"))+'</td><td>'+esc(p["Tipo"]||"")+'</td><td style="white-space:normal">'+esc(String(p["Texto"]||"").replace(/\s+/g," "))+'</td><td><span class="tag '+esc(p["Status"]||"")+'">'+esc(rot[p["Status"]]||p["Status"]||"")+'</span></td><td style="white-space:normal">'+esc(p["Resultado"]||"")+'</td></tr>';
+  }).join("")||'<tr><td colspan="5" class="cinza">Nenhum pedido enviado ainda.</td></tr>';
 }
 function barrasSVG(dadosBarra,series,W,H){
   const ml=70,mb=26,mt=12,mr=10;
