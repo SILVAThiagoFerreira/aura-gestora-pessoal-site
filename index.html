@@ -6,13 +6,17 @@
 <title>Aura Gestora Pessoal</title>
 <meta name="description" content="Agenda, finanças e custos fixos em texto livre, organizados com IA.">
 <link rel="icon" href="logo.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300&display=swap" rel="stylesheet">
 <style>
 *{box-sizing:border-box;border-radius:0!important;box-shadow:none!important;border:0}
-/* Padrão "arquivo" (FBI): mesmas cores do programa desktop (tema.py). */
-:root{--cab:#0B1A33;--cab2:#0B1A33;--fundo:#E9E6DC;--painel:#F7F5EE;--faixa:#DAD6C8;--cabgrade:#E6E2D4;--sel:#CFD9EA;--texto:#14202F;--cinza:#5C6370;--prim:#0B3D91;--prim2:#072A66;--botao:#E2DDCD;--botao2:#D6D0BD;--ok:#1B6B3A;--okf:#DDEFE2;--avf:#F7EDC8;--av:#7A5A00;--erf:#F6DEDE;--er:#9B1C1C;--if:#DCE7F6;--in:#0B3D91;--entrada:#F7F5EE;--verde:#1B6B3A;--verm:#9B1C1C;--azul:#0B3D91}
-body.escuro{--fundo:#0B1322;--painel:#111C2F;--faixa:#1A2A44;--cabgrade:#16243B;--sel:#23407A;--texto:#DCE5F2;--cinza:#8A9BB5;--prim:#C9A227;--prim2:#9C7B16;--botao:#16233A;--botao2:#1F3152;--cab:#05080F;--cab2:#05080F;--okf:#0F2A1C;--ok:#52D392;--avf:#2E2508;--av:#E9C15A;--erf:#2E1010;--er:#FF7A7A;--if:#0F1F38;--in:#7FB2FF;--entrada:#111C2F;--verde:#52D392;--verm:#FF7A7A;--azul:#C9A227}
+/* Cores do FBI (azul-marinho, dourado e branco), iguais às do programa desktop (tema.py). Fonte Roboto Light. */
+:root{--cab:#0B1F3A;--cab2:#0B1F3A;--fundo:#F1F3F6;--painel:#FFFFFF;--faixa:#DDE4EE;--cabgrade:#E6ECF4;--sel:#D3DEEF;--texto:#0B1F3A;--cinza:#56657A;--prim:#0B1F3A;--prim2:#071428;--botao:#E3E9F2;--botao2:#D2DCEA;--ok:#1B6B3A;--okf:#E3F4EA;--avf:#FBF1CF;--av:#7A5A00;--erf:#F8E1E1;--er:#9B1C1C;--if:#E1EAF7;--in:#0B1F3A;--entrada:#FFFFFF;--verde:#1B6B3A;--verm:#9B1C1C;--azul:#0B1F3A}
+body.escuro{--fundo:#0B1F3A;--painel:#12294A;--faixa:#1B3A66;--cabgrade:#163255;--sel:#2A4D80;--texto:#F2F4F8;--cinza:#A7B4C7;--prim:#D4AF37;--prim2:#B38F24;--botao:#15305A;--botao2:#1E3D6E;--cab:#071428;--cab2:#071428;--okf:#143B2A;--ok:#7EE0A8;--avf:#3A2F0C;--av:#F2CD5C;--erf:#3D1717;--er:#FF8A8A;--if:#15305A;--in:#9CC8FF;--entrada:#12294A;--verde:#7EE0A8;--verm:#FF8A8A;--azul:#D4AF37}
 html,body{margin:0;height:100%}
-body{background:var(--fundo);color:var(--texto);font:13px/1.45 Consolas,"Courier New",monospace;display:flex;flex-direction:column;min-height:100vh}
+body{background:var(--fundo);color:var(--texto);font:300 14px/1.45 Roboto,system-ui,Arial,sans-serif;display:flex;flex-direction:column;min-height:100vh}
+h1,h2,h3,h4,b,strong{font-weight:300}
 h3,nav.menu h4,.card .rot,.topo .marca span{text-transform:uppercase;letter-spacing:.04em}
 button,input,select,textarea{font:inherit;color:inherit;outline:none}
 .topo{background:var(--cab);color:#fff;height:46px;display:flex;align-items:center;justify-content:space-between;padding:0 14px;flex:0 0 auto}
@@ -227,7 +231,7 @@ svg text{fill:var(--texto);font-size:12px}
         <h3>Relatório da agenda para WhatsApp</h3>
         <div class="cinza">Gere o texto com seus dados reais, copie e cole no WhatsApp.</div>
         <div class="linha" style="margin:8px 0"><button class="btn prim" id="btnGerarRel">Gerar relatório</button><button class="btn" id="btnCopiarRel">Copiar texto</button><button class="btn" id="btnBaixarRel">Baixar .txt</button></div>
-        <textarea id="textoRel" rows="16" style="width:100%;font-family:Consolas,monospace" readonly></textarea>
+        <textarea id="textoRel" rows="16" style="width:100%;font-family:Roboto,system-ui,sans-serif;font-weight:300" readonly></textarea>
       </div>
     </section>
 
