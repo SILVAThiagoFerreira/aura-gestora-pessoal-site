@@ -413,7 +413,7 @@ function renderIndicadores(){
   const sobra=rec-des-cus;
   const parcelasFaltam=tabela("Custos").reduce((s,c)=>{if(c.parcelas===""||c.parcelas==null||!c.inicio_mes)return s;const pagas=idx(mesAtual)-idx(String(c.inicio_mes).slice(0,7))+1;const rest=Math.max(0,Number(c.parcelas)-Math.max(0,pagas));return s+rest*Number(c.valor_centavos);},0);
   $("#kCards").innerHTML=[
-    [rc.previsao?"Receita do mês (prevista)":"Receita do mês",reais(rec)],["Despesas do mês",reais(des)],["Sobra do mês",reais(sobra)],
+    [rc.previsao?"Receita do mês (prevista)":"Receita do mês",reais(rec)],["Despesas do mês",reais(des)],["Sobra do mês",rec?reais(sobra):"lance a receita"],
     ["Taxa de poupança",rec?Math.round(sobra/rec*100)+"%":"—"],["Custos fixos sobre a receita",rec?Math.round(cus/rec*100)+"%":"—"],
     ["Reserva cobre",cus?(pat/cus).toFixed(1)+" meses":"—"],["Patrimônio líquido",reais(pat)],["Parcelas a pagar",reais(parcelasFaltam)]
   ].map(([t,v])=>'<div class="card"><div class="rot">'+t+'</div><div class="val">'+v+'</div></div>').join("");
@@ -520,11 +520,14 @@ async function carregarDados(){
     ir(telaAtual,false);
   }catch(e){status("Não consegui carregar seus dados. Verifique a conexão.","erro");}
 }
-function enviarPlanilha(texto,tipo){
-  if(!texto.trim()){status("Escreva o texto antes de enviar.","aviso");return;}
+// Resolve true só se o envio saiu; o chamador limpa o texto apenas nesse caso, para não perder o que foi escrito.
+function enviarPlanilha(texto,tipo,botao){
+  if(!texto.trim()){status("Escreva o texto antes de enviar.","aviso");return Promise.resolve(false);}
+  if(botao)botao.disabled=true;
   return fetch(APPS_SCRIPT_URL,{method:"POST",mode:"no-cors",headers:{"Content-Type":"text/plain"},body:JSON.stringify({texto:texto,tipo:tipo,origem:"site"})})
-    .then(()=>status("Enviado para a planilha. O programa do seu computador processa e pede sua confirmação.","sucesso"))
-    .catch(()=>status("Não consegui enviar. Verifique a conexão.","erro"));
+    .then(()=>{status("Enviado para a planilha. O programa do seu computador processa e pede sua confirmação.","sucesso");return true;})
+    .catch(()=>{status("Não consegui enviar. Verifique a conexão. Seu texto continua aqui.","erro");return false;})
+    .finally(()=>{if(botao)botao.disabled=false;});
 }
 
 /* ---------- login ---------- */
@@ -568,8 +571,8 @@ function bind(){
   $("#btnAtualizar").addEventListener("click",()=>{carregarDados();});
   $("#comando").addEventListener("keydown",e=>{if(e.key!=="Enter")return;const c=e.target.value.trim().toUpperCase();e.target.value="";if(NOMES[c])ir(c);else status("Transação '"+(c||"(vazia)")+"' não existe. Use AG01 a AG11.","erro");});
   document.addEventListener("keydown",e=>{if(e.key==="F3"){e.preventDefault();voltar();}if(e.key==="F5"){e.preventDefault();carregarDados();}});
-  $("#btnEnviarTexto").addEventListener("click",()=>{const t=$("#texto").value;enviarPlanilha(t,"anotacao").then(()=>{$("#texto").value="";});});
-  $("#btnPedido").addEventListener("click",()=>{const t=$("#pedidoTxt").value;enviarPlanilha(t,"mudanca").then(()=>{$("#pedidoTxt").value="";});});
+  $("#btnEnviarTexto").addEventListener("click",()=>{const t=$("#texto").value;enviarPlanilha(t,"anotacao",$("#btnEnviarTexto")).then(ok=>{if(ok)$("#texto").value="";});});
+  $("#btnPedido").addEventListener("click",()=>{const t=$("#pedidoTxt").value;enviarPlanilha(t,"mudanca",$("#btnPedido")).then(ok=>{if(ok)$("#pedidoTxt").value="";});});
   $("#btnPedirPago").addEventListener("click",()=>status("Para marcar um custo como pago, descreva em AG11 (ex.: marcar Spotify como pago em outubro).","info"));
   $("#btnSairConta").addEventListener("click",()=>{idToken=null;dados=null;localStorage.removeItem("aura_credencial");mostrarLogin("Você saiu da conta.");});
   $("#btnGerarRel").addEventListener("click",gerarRelatorio);
