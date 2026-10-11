@@ -8,10 +8,12 @@
 <link rel="icon" href="logo.svg" type="image/svg+xml">
 <style>
 *{box-sizing:border-box;border-radius:0!important;box-shadow:none!important;border:0}
-:root{--cab:#354A5F;--cab2:#0F1B2A;--fundo:#EEF1F4;--painel:#FFFFFF;--faixa:#D5DEE8;--cabgrade:#E4EAF0;--sel:#CAE3F7;--texto:#1D2D3D;--cinza:#5B6B7A;--prim:#0A6ED1;--prim2:#0854A0;--botao:#DCE3EA;--botao2:#C9D4DF;--ok:#107E3E;--okf:#E4F4E8;--avf:#FFF4CE;--av:#7A5600;--erf:#FBE3E3;--er:#BB0000;--if:#E3EEF9;--in:#0A4F8F;--entrada:#F4F6F8;--verde:#107E3E;--verm:#BB0000;--azul:#0A6ED1}
-body.escuro{--fundo:#1B2430;--painel:#242F3D;--faixa:#2E3B4C;--cabgrade:#2B3848;--sel:#2F4B6B;--texto:#E6EDF5;--cinza:#9AA8B8;--botao:#2E3B4C;--botao2:#3A4A60;--cab:#0F1B2A;--okf:#143423;--ok:#6FD39A;--avf:#3A2F12;--av:#F5C451;--erf:#3D1B1B;--er:#FF8A8A;--if:#15283D;--in:#8CC4FF;--entrada:#2E3B4C;--verde:#6FD39A;--verm:#FF8A8A;--azul:#2F8FF0}
+/* Padrão "arquivo" (FBI): mesmas cores do programa desktop (tema.py). */
+:root{--cab:#0B1A33;--cab2:#0B1A33;--fundo:#E9E6DC;--painel:#F7F5EE;--faixa:#DAD6C8;--cabgrade:#E6E2D4;--sel:#CFD9EA;--texto:#14202F;--cinza:#5C6370;--prim:#0B3D91;--prim2:#072A66;--botao:#E2DDCD;--botao2:#D6D0BD;--ok:#1B6B3A;--okf:#DDEFE2;--avf:#F7EDC8;--av:#7A5A00;--erf:#F6DEDE;--er:#9B1C1C;--if:#DCE7F6;--in:#0B3D91;--entrada:#F7F5EE;--verde:#1B6B3A;--verm:#9B1C1C;--azul:#0B3D91}
+body.escuro{--fundo:#0B1322;--painel:#111C2F;--faixa:#1A2A44;--cabgrade:#16243B;--sel:#23407A;--texto:#DCE5F2;--cinza:#8A9BB5;--prim:#C9A227;--prim2:#9C7B16;--botao:#16233A;--botao2:#1F3152;--cab:#05080F;--cab2:#05080F;--okf:#0F2A1C;--ok:#52D392;--avf:#2E2508;--av:#E9C15A;--erf:#2E1010;--er:#FF7A7A;--if:#0F1F38;--in:#7FB2FF;--entrada:#111C2F;--verde:#52D392;--verm:#FF7A7A;--azul:#C9A227}
 html,body{margin:0;height:100%}
-body{background:var(--fundo);color:var(--texto);font:14px/1.45 "Segoe UI",system-ui,Arial,sans-serif;display:flex;flex-direction:column;min-height:100vh}
+body{background:var(--fundo);color:var(--texto);font:13px/1.45 Consolas,"Courier New",monospace;display:flex;flex-direction:column;min-height:100vh}
+h3,nav.menu h4,.card .rot,.topo .marca span{text-transform:uppercase;letter-spacing:.04em}
 button,input,select,textarea{font:inherit;color:inherit;outline:none}
 .topo{background:var(--cab);color:#fff;height:46px;display:flex;align-items:center;justify-content:space-between;padding:0 14px;flex:0 0 auto}
 .topo .marca{display:flex;align-items:center;gap:10px;font-weight:700}
@@ -27,7 +29,7 @@ button,input,select,textarea{font:inherit;color:inherit;outline:none}
 .btn{background:var(--botao);color:var(--texto);padding:7px 14px;cursor:pointer;white-space:nowrap}
 .btn:hover{background:var(--botao2)}
 .btn:disabled{opacity:.5;cursor:default}
-.btn.prim{background:var(--prim);color:#fff}
+.btn.prim{background:var(--prim);color:var(--fundo)}
 .btn.prim:hover{background:var(--prim2)}
 .btn.peq{padding:4px 10px;font-size:13px}
 .comando{margin-left:auto;display:flex;align-items:center;gap:6px;color:var(--cinza)}
@@ -133,7 +135,7 @@ svg text{fill:var(--texto);font-size:12px}
 <div class="barra">
   <button class="btn" id="btnVoltar">&larr; Voltar &nbsp;F3</button>
   <button class="btn" id="btnAtualizar">&#8635; Atualizar &nbsp;F5</button>
-  <div class="comando">Comando <input type="text" id="comando" size="8" placeholder="AG01"></div>
+  <div class="comando"><input type="text" id="comando" size="8" placeholder="AG01" aria-label="Comando"></div>
 </div>
 
 <div class="corpo">
@@ -272,7 +274,7 @@ svg text{fill:var(--texto);font-size:12px}
   </main>
 </div>
 
-<div class="rodape"><span>Seus dados são lidos da sua planilha e só ficam visíveis para a conta autorizada.</span><span id="ultimaSinc"></span><span>Aura Gestora Pessoal</span></div>
+<div class="rodape"><span>Dados restritos à conta autorizada</span><span id="ultimaSinc"></span></div>
 
 <script src="https://accounts.google.com/gsi/client" async defer></script>
 <script>
