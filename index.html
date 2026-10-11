@@ -2,6 +2,7 @@
 <html lang="pt-BR">
 <head>
 <meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://accounts.google.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: https:; connect-src 'self' https://script.google.com https://script.googleusercontent.com https://accounts.google.com; frame-src https://accounts.google.com;">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Aura Gestora Pessoal</title>
 <meta name="description" content="Agenda, finanças e custos fixos em texto livre, organizados com IA.">
@@ -18,7 +19,11 @@ html,body{margin:0;height:100%}
 body{background:var(--fundo);color:var(--texto);font:300 14px/1.45 Roboto,system-ui,Arial,sans-serif;display:flex;flex-direction:column;min-height:100vh}
 h1,h2,h3,h4,b,strong{font-weight:300}
 h3,nav.menu h4,.card .rot,.topo .marca span{text-transform:uppercase;letter-spacing:.04em}
-button,input,select,textarea{font:inherit;color:inherit;outline:none}
+button,input,select,textarea{font:inherit;color:inherit}
+/* Foco por teclado sempre visível; o contorno só some com o clique do mouse nos campos. */
+:focus-visible{outline:2px solid var(--prim);outline-offset:2px}
+.topo :focus-visible{outline-color:#fff}
+button:focus:not(:focus-visible),input:focus:not(:focus-visible),select:focus:not(:focus-visible),textarea:focus:not(:focus-visible){outline:none}
 .topo{background:var(--cab);color:#fff;height:46px;display:flex;align-items:center;justify-content:space-between;padding:0 14px;flex:0 0 auto}
 .topo .marca{display:flex;align-items:center;gap:10px;font-weight:700}
 .topo .marca img{width:26px;height:26px}
@@ -92,14 +97,20 @@ svg text{fill:var(--texto);font-size:12px}
 .login{position:fixed;inset:0;z-index:50;background:var(--fundo);display:flex;align-items:center;justify-content:center;padding:20px}
 .login .caixa{background:var(--painel);max-width:420px;width:100%;text-align:center;padding:30px 24px}
 .login img{width:72px;height:72px}
+.fundoMenu{display:none}
 @media (max-width:860px){
   .menuBtn{display:inline-block}
-  nav.menu{position:fixed;top:46px;bottom:0;left:0;z-index:20;width:270px;transform:translateX(-105%);transition:transform .2s}
-  nav.menu.aberto{transform:none}
+  nav.menu{position:fixed;top:46px;bottom:0;left:0;z-index:20;width:270px;transform:translateX(-105%);visibility:hidden;transition:transform .2s,visibility .2s}
+  nav.menu.aberto{transform:none;visibility:visible}
+  .fundoMenu{display:block;position:fixed;top:46px;left:0;right:0;bottom:0;z-index:19;background:rgba(0,0,0,.45);visibility:hidden;opacity:0;transition:opacity .2s,visibility .2s}
+  .fundoMenu.aberto{visibility:visible;opacity:1}
   .comando{margin-left:0;width:100%}
   .cards{grid-template-columns:repeat(2,1fr)}
   .destaque{font-size:24px}
   .corpo{padding:0 4px 6px}
+}
+@media (max-width:599px){
+  .atalho{display:none}
 }
 @media (max-width:460px){
   .cards{grid-template-columns:1fr}
@@ -123,7 +134,7 @@ svg text{fill:var(--texto);font-size:12px}
 
 <header class="topo">
   <div class="marca">
-    <button class="menuBtn" id="btnMenu" aria-label="Menu">&#9776;</button>
+    <button class="menuBtn" id="btnMenu" aria-label="Menu" aria-controls="menu" aria-expanded="false">&#9776;</button>
     <img src="logo.svg" alt="">
     <span>Aura Gestora Pessoal</span>
   </div>
@@ -137,13 +148,14 @@ svg text{fill:var(--texto);font-size:12px}
 </header>
 
 <div class="barra">
-  <button class="btn" id="btnVoltar">&larr; Voltar &nbsp;F3</button>
-  <button class="btn" id="btnAtualizar">&#8635; Atualizar &nbsp;F5</button>
+  <button class="btn" id="btnVoltar">&larr; Voltar <span class="atalho">&nbsp;F3</span></button>
+  <button class="btn" id="btnAtualizar">&#8635; Atualizar <span class="atalho">&nbsp;F5</span></button>
   <div class="comando"><input type="text" id="comando" size="8" placeholder="AG01" aria-label="Comando"></div>
 </div>
 
 <div class="corpo">
   <nav class="menu" id="menu"><h4>Transações</h4><div id="itensMenu"></div></nav>
+  <div class="fundoMenu" id="fundoMenu"></div>
   <main class="area">
     <div class="faixaTela" id="faixaTela"></div>
 
@@ -152,7 +164,7 @@ svg text{fill:var(--texto);font-size:12px}
       <div class="painel">
         <h3>Texto livre</h3>
         <div class="cinza">Escreva como fala. O texto vai para a planilha; o programa do seu computador organiza e pede sua confirmação.</div>
-        <textarea id="texto" rows="5" style="width:100%;margin-top:8px" placeholder="Ex.: Dia 12 às 14:30 dentista. Recebi 3.500 de salário. Paguei 1.200 de aluguel."></textarea>
+        <textarea id="texto" rows="5" style="width:100%;margin-top:8px" placeholder="Ex.: Dia 12 às 14:30 dentista. Recebi 3.500 de salário. Paguei 1.200 de aluguel." aria-label="Texto livre para organizar"></textarea>
         <div class="linha" style="margin-top:8px"><button class="btn prim" id="btnEnviarTexto">Enviar para processar</button><span class="cinza" id="ajudaTexto"></span></div>
       </div>
     </section>
@@ -165,7 +177,7 @@ svg text{fill:var(--texto);font-size:12px}
     <!-- AG03 -->
     <section class="tela" data-tela="AG03">
       <div class="painel">
-        <div class="linha" style="justify-content:space-between"><h3>Lançamentos</h3><div class="linha"><span class="cinza">Mês</span><select id="finMes"></select></div></div>
+        <div class="linha" style="justify-content:space-between"><h3>Lançamentos</h3><div class="linha"><span class="cinza">Mês</span><select id="finMes" aria-label="Mês dos lançamentos"></select></div></div>
         <div class="linha cinza" id="finTotais" style="margin:6px 0"></div>
         <div class="gw"><table><thead><tr><th>Data</th><th>Tipo</th><th>Categoria</th><th>Descrição</th><th class="num">Valor</th></tr></thead><tbody id="tabFin"></tbody></table></div>
       </div>
@@ -173,7 +185,7 @@ svg text{fill:var(--texto);font-size:12px}
 
     <!-- AG04 -->
     <section class="tela" data-tela="AG04">
-      <div class="linha" style="background:var(--painel);padding:10px"><span class="cinza">Mês</span><select id="resMes"></select></div>
+      <div class="linha" style="background:var(--painel);padding:10px"><span class="cinza">Mês</span><select id="resMes" aria-label="Mês do resumo"></select></div>
       <div class="cards" id="resCards"></div>
       <div class="painel"><h3>Despesas por categoria</h3><div class="gw"><table><thead><tr><th>Categoria</th><th class="num">Total</th><th class="num">%</th></tr></thead><tbody id="tabCat"></tbody></table></div></div>
     </section>
@@ -238,7 +250,7 @@ svg text{fill:var(--texto);font-size:12px}
     <!-- AG08 -->
     <section class="tela" data-tela="AG08">
       <div class="painel">
-        <div class="linha" style="justify-content:space-between"><h3 id="cfTitulo"></h3><div class="linha"><button class="btn peq" id="btnPedirPago">Pedir marcação de pago</button></div></div>
+        <div class="linha" style="justify-content:space-between"><h3 id="cfTitulo"></h3><div class="linha"><button class="btn peq" id="btnPedirPago">Pedir marcação de pago (AG11)</button></div></div>
         <div class="linha" id="cfTotais" style="margin:6px 0"></div>
         <div class="barraProg" style="margin-bottom:10px"><div id="cfBarra" style="width:0"></div><span id="cfPct"></span></div>
         <div class="gw"><table><thead><tr><th>Venc.</th><th>Descrição</th><th>Categoria</th><th>Parcela</th><th class="num">Valor</th><th>Status no mês</th></tr></thead><tbody id="tabCustos"></tbody></table></div>
@@ -268,13 +280,13 @@ svg text{fill:var(--texto);font-size:12px}
       <div class="painel">
         <h3>Pedir uma mudança no programa</h3>
         <div class="cinza">O pedido vai para a planilha e é implementado com testes antes de ir para o seu uso.</div>
-        <textarea id="pedidoTxt" rows="4" style="width:100%;margin-top:8px"></textarea>
+        <textarea id="pedidoTxt" rows="4" style="width:100%;margin-top:8px" aria-label="Texto do pedido de mudança"></textarea>
         <div style="margin-top:8px"><button class="btn prim" id="btnPedido">Enviar pedido</button></div>
       </div>
       <div class="painel" style="margin-top:8px"><h3>Pedidos enviados</h3><div class="gw"><table><thead><tr><th>Quando</th><th>Tipo</th><th>Texto</th><th>Status</th><th>Resultado</th></tr></thead><tbody id="tabPedidos"></tbody></table></div></div>
     </section>
 
-    <div class="status" id="status"><span id="msg"></span></div>
+    <div class="status" id="status" role="status" aria-live="polite"><span id="msg"></span></div>
   </main>
 </div>
 
@@ -319,6 +331,9 @@ function totalCustos(mes){return custosDoMes(mes).reduce((s,c)=>s+Number(c.valor
 // Lançamentos com custo_id são pagamentos de custo fixo: já entram em totalCustos, então não contam aqui.
 function somaLanc(mes,tipo){return tabela("Lancamentos").filter(l=>dataISO(l.data).startsWith(mes)&&l.tipo===tipo&&!l.custo_id).reduce((s,l)=>s+Number(l.valor_centavos||0),0);}
 function patrimonio(){return tabela("Contas").reduce((s,c)=>s+Number(c.saldo_liquido_centavos||0),0);}
+// Verdadeiro se alguma conta veio da planilha sem o saldo: nesse caso o total não é confiável e mostra "—".
+function patrimonioFaltando(){return tabela("Contas").some(c=>c.saldo_liquido_centavos==null);}
+function valorOuTraco(v){return v==null||v===""?"—":reais(v);}
 // Data no fuso local (toISOString usa UTC e avança o dia depois das 21h em Brasília).
 function isoLocal(d){return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");}
 function ultimoDiaUtil(ano,mes){const u=new Date(ano,mes,0);while(u.getDay()===0||u.getDay()===6)u.setDate(u.getDate()-1);return u;}
@@ -338,8 +353,14 @@ function montarMenu(){
   const box=$("#itensMenu");box.innerHTML="";
   GRUPOS.forEach(([t,cods])=>{
     const g=document.createElement("div");g.className="grupo";g.textContent=t;box.appendChild(g);
-    cods.forEach(c=>{const b=document.createElement("button");b.className="item";b.dataset.cod=c;b.innerHTML='<span class="cod">'+c+'</span><span>'+esc(NOMES[c])+'</span>';b.addEventListener("click",()=>{ir(c);$("#menu").classList.remove("aberto");});box.appendChild(b);});
+    cods.forEach(c=>{const b=document.createElement("button");b.className="item";b.dataset.cod=c;b.innerHTML='<span class="cod">'+c+'</span><span>'+esc(NOMES[c])+'</span>';b.addEventListener("click",()=>{ir(c);definirMenu(false);});box.appendChild(b);});
   });
+}
+// Abre ou fecha o menu lateral (celular), com o fundo escuro e aria-expanded do botão.
+function definirMenu(aberto){
+  $("#menu").classList.toggle("aberto",aberto);
+  $("#fundoMenu").classList.toggle("aberto",aberto);
+  $("#btnMenu").setAttribute("aria-expanded",String(aberto));
 }
 function ir(c,guardar){
   if(!NOMES[c])return;
@@ -395,10 +416,10 @@ function barrasSVG(dadosBarra,series,W,H){
   const max=Math.max(1,...dadosBarra.flatMap(d=>series.map(s=>Number(d[s.k])||0)));
   const aw=W-ml-mr,ah=H-mb-mt,gw=aw/dadosBarra.length,bw=Math.min(22,gw*0.7/series.length);
   let s='<svg viewBox="0 0 '+W+' '+H+'" width="100%" role="img">';
-  [0,0.5,1].forEach(f=>{const y=mt+ah*(1-f);s+='<rect x="'+ml+'" y="'+y+'" width="'+(W-ml-mr)+'" height="1" fill="var(--faixa)"/><text x="'+(ml-6)+'" y="'+(y+4)+'" text-anchor="end">'+esc(curto(max*f))+'</text>';});
+  [0,0.5,1].forEach(f=>{const y=mt+ah*(1-f);s+='<rect x="'+ml+'" y="'+y+'" width="'+(W-ml-mr)+'" height="1" style="fill:var(--faixa)"/><text x="'+(ml-6)+'" y="'+(y+4)+'" text-anchor="end">'+esc(curto(max*f))+'</text>';});
   dadosBarra.forEach((d,i)=>{const cx=ml+gw*i+gw/2;
     series.forEach((se,j)=>{const v=Number(d[se.k])||0,h=ah*v/max,x=cx-bw*series.length/2+j*bw;
-      s+='<rect x="'+x+'" y="'+(mt+ah-h)+'" width="'+(bw-2)+'" height="'+h+'" fill="'+se.cor+'"><title>'+esc(mesNome(d.mes)+" — "+se.nome+": "+reais(v))+'</title></rect>';});
+      s+='<rect x="'+x+'" y="'+(mt+ah-h)+'" width="'+(bw-2)+'" height="'+h+'" style="fill:'+se.cor+'"><title>'+esc(mesNome(d.mes)+" — "+se.nome+": "+reais(v))+'</title></rect>';});
     s+='<text x="'+cx+'" y="'+(H-7)+'" text-anchor="middle">'+mesNome(d.mes)+'</text>';});
   return s+'</svg>';
 }
@@ -415,7 +436,7 @@ function renderIndicadores(){
   $("#kCards").innerHTML=[
     [rc.previsao?"Receita do mês (prevista)":"Receita do mês",reais(rec)],["Despesas do mês",reais(des)],["Sobra do mês",rec?reais(sobra):"lance a receita"],
     ["Taxa de poupança",rec?Math.round(sobra/rec*100)+"%":"—"],["Custos fixos sobre a receita",rec?Math.round(cus/rec*100)+"%":"—"],
-    ["Reserva cobre",cus?(pat/cus).toFixed(1)+" meses":"—"],["Patrimônio líquido",reais(pat)],["Parcelas a pagar",reais(parcelasFaltam)]
+    ["Reserva cobre",cus?(pat/cus).toFixed(1)+" meses":"—"],["Patrimônio líquido",patrimonioFaltando()?"—":reais(pat)],["Parcelas a pagar",reais(parcelasFaltam)]
   ].map(([t,v])=>'<div class="card"><div class="rot">'+t+'</div><div class="val">'+v+'</div></div>').join("");
   const cats={};tabela("Lancamentos").filter(l=>dataISO(l.data).startsWith(mesAtual)&&l.tipo==="despesa"&&!l.custo_id).forEach(l=>cats[l.categoria]=(cats[l.categoria]||0)+Number(l.valor_centavos));
   const tot=Object.values(cats).reduce((a,b)=>a+b,0);
@@ -485,9 +506,9 @@ function renderCustos(){
 }
 function renderContas(){
   const contas=tabela("Contas");
-  $("#contasTot").textContent="Patrimônio líquido: "+reais(patrimonio());
+  $("#contasTot").textContent="Patrimônio líquido: "+(patrimonioFaltando()?"—":reais(patrimonio()));
   $("#tabAjustes").innerHTML=tabela("Movimentos").slice().sort((a,b)=>dataISO(b.data).localeCompare(dataISO(a.data))).map(m=>{const conta=contas.find(c=>String(c.id)===String(m.conta_id));return '<tr><td>'+dataBR(m.data)+'</td><td>'+esc(conta?conta.nome:"")+'</td><td class="num">'+reais(m.valor_centavos)+'</td><td>'+esc(m.descricao||"")+'</td></tr>';}).join("")||'<tr><td colspan="4" class="cinza">Nenhum ajuste lançado.</td></tr>';
-  $("#tabContas").innerHTML=contas.map(c=>'<tr><td>'+esc(c.nome)+'</td><td>'+esc(c.tipo)+'</td><td>'+(c.data_base?dataBR(c.data_base):"—")+'</td><td class="num">'+reais(c.saldo_bruto_centavos)+'</td><td class="num">'+reais(c.saldo_liquido_centavos)+'</td><td class="num">'+reais(c.rendimento_centavos)+'</td></tr>').join("")||'<tr><td colspan="5" class="cinza">Nenhuma conta.</td></tr>';
+  $("#tabContas").innerHTML=contas.map(c=>'<tr><td>'+esc(c.nome)+'</td><td>'+esc(c.tipo)+'</td><td>'+(c.data_base?dataBR(c.data_base):"—")+'</td><td class="num">'+valorOuTraco(c.saldo_bruto_centavos)+'</td><td class="num">'+valorOuTraco(c.saldo_liquido_centavos)+'</td><td class="num">'+valorOuTraco(c.rendimento_centavos)+'</td></tr>').join("")||'<tr><td colspan="5" class="cinza">Nenhuma conta.</td></tr>';
 }
 function renderConfig(){
   const escuro=localStorage.getItem("aura_tema")==="escuro";
@@ -503,10 +524,12 @@ function aplicarTemaPadrao(){
   $$("input[name=tema]").forEach(r=>r.checked=(r.value==="escuro")===escuro);
 }
 async function carregarDados(){
-  if(!idToken){mostrarLogin("Entre com sua conta Google para ver seus dados.");return;}
+  if(!idToken){mostrarLogin("");return;}
   status("Carregando seus dados da planilha...","info");
   try{
     const r=await fetch(APPS_SCRIPT_URL+"?acao=dados&idToken="+encodeURIComponent(idToken));
+    // Falha do servidor (HTTP) não é sessão expirada: mantém o usuário conectado.
+    if(!r.ok){status("Não consegui carregar seus dados. Tente de novo em instantes.","erro");return;}
     const j=await r.json();
     if(!j.ok){
       console.log("Aura: planilha recusou", j.dados);
@@ -551,6 +574,7 @@ function aoEntrar(resp){
   }catch(e){mostrarLogin("Não consegui confirmar seu login. Tente de novo.");}
 }
 function iniciarLogin(){
+  const inicio=Date.now();
   const esperar=setInterval(()=>{
     if(window.google&&google.accounts&&google.accounts.id){
       clearInterval(esperar);
@@ -559,13 +583,25 @@ function iniciarLogin(){
       const salvo=localStorage.getItem("aura_credencial");
       if(salvo){try{const u=decodificar(salvo);if(u.exp*1000>Date.now()){idToken=salvo;mostrarUsuario(u);carregarDados();return;}}catch(e){}}
       mostrarLogin("");
+    }else if(Date.now()-inicio>10000){
+      clearInterval(esperar);
+      mostrarFalhaLogin();
     }
   },200);
+}
+// Sem o script do Google (rede ruim ou bloqueio), oferece nova tentativa recarregando a página.
+function mostrarFalhaLogin(){
+  mostrarLogin("Não consegui carregar o login do Google. Verifique a conexão.");
+  const b=document.createElement("button");
+  b.className="btn prim";b.textContent="Tentar de novo";b.style.marginTop="12px";
+  b.addEventListener("click",()=>location.reload());
+  $("#avisoLogin").appendChild(b);
 }
 
 /* ---------- eventos ---------- */
 function bind(){
-  $("#btnMenu").addEventListener("click",()=>$("#menu").classList.toggle("aberto"));
+  $("#btnMenu").addEventListener("click",()=>definirMenu(!$("#menu").classList.contains("aberto")));
+  $("#fundoMenu").addEventListener("click",()=>definirMenu(false));
   $("#btnConfig").addEventListener("click",()=>ir("AG10"));
   $("#btnVoltar").addEventListener("click",voltar);
   $("#btnAtualizar").addEventListener("click",()=>{carregarDados();});
@@ -573,7 +609,7 @@ function bind(){
   document.addEventListener("keydown",e=>{if(e.key==="F3"){e.preventDefault();voltar();}if(e.key==="F5"){e.preventDefault();carregarDados();}});
   $("#btnEnviarTexto").addEventListener("click",()=>{const t=$("#texto").value;enviarPlanilha(t,"anotacao",$("#btnEnviarTexto")).then(ok=>{if(ok)$("#texto").value="";});});
   $("#btnPedido").addEventListener("click",()=>{const t=$("#pedidoTxt").value;enviarPlanilha(t,"mudanca",$("#btnPedido")).then(ok=>{if(ok)$("#pedidoTxt").value="";});});
-  $("#btnPedirPago").addEventListener("click",()=>status("Para marcar um custo como pago, descreva em AG11 (ex.: marcar Spotify como pago em outubro).","info"));
+  $("#btnPedirPago").addEventListener("click",()=>ir("AG11"));
   $("#btnSairConta").addEventListener("click",()=>{idToken=null;dados=null;localStorage.removeItem("aura_credencial");mostrarLogin("Você saiu da conta.");});
   $("#btnGerarRel").addEventListener("click",gerarRelatorio);
   $("#btnCopiarRel").addEventListener("click",()=>{const t=$("#textoRel").value;if(!t){status("Gere o relatório antes de copiar.","aviso");return;}navigator.clipboard.writeText(t).then(()=>status("Texto copiado. Agora é só colar no WhatsApp.","sucesso")).catch(()=>status("Não consegui copiar. Selecione o texto e copie.","erro"));});
